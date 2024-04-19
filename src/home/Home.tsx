@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import haversine, { Coordinate } from 'haversine';
-import { Button, Heading, SimpleGrid, Spinner, VStack, Image } from '@chakra-ui/react';
+import { Button, Heading, SimpleGrid, Spinner, VStack, Image, CircularProgress, Text } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { fetchFoodTrucks } from './HomeAPI';
 import FoodTruckCard from './FoodTruckCard';
@@ -18,7 +18,7 @@ const Home = () => {
   const [filteredTrucks, setFilteredTrucks] = useState<FoodTruck[]>([]);
   const [offset, setOffset] = useState<number>(0);
   const [hasFiltered, setHasFiltered] = useState<boolean>(false);
-  const [currentLocation, setCurrentLocation] = useState<Coordinate>(testLocation)
+  const [currentLocation, setCurrentLocation] = useState<Coordinate>({ latitude: 0, longitude: 0 })
 
   const { isPending, isError, data: foodtrucks, error} = useQuery({ queryKey: ['foodtrucks'], queryFn: fetchFoodTrucks });
 
@@ -29,11 +29,22 @@ const Home = () => {
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
         })
+        setFilteredTrucks([]);
+        setHasFiltered(false);
       };
   
-      const error = (err: { code: any; message: any; }) => console.warn(`ERROR(${err.code}): ${err.message}`);
+      const error = (err: { code: any; message: any; }) => {
+        console.warn(`ERROR(${err.code}): ${err.message}`);
+        // for testing, we will set location to test location if user declines
+        setCurrentLocation(testLocation);
+        setFilteredTrucks([]);
+        setHasFiltered(false);
+      };
   
       navigator.geolocation.getCurrentPosition(success, error)
+    } else {
+      setCurrentLocation(testLocation);
+
     }
   }, [])
 
@@ -79,19 +90,22 @@ const Home = () => {
 
     setFilteredTrucks(filtered);
     setHasFiltered(true);
-    setOffset(num => num + 3);
-  }, [foodtrucks, calculateDistance, isOpen]);
+    if (hasFiltered) setOffset(num => num + 3);
+  }, [foodtrucks, calculateDistance, isOpen, hasFiltered]);
 
 
   if (isPending) {
     return (
-      <Spinner
-        thickness='4px'
-        speed='0.65s'
-        emptyColor='gray.200'
-        color='blue.500'
-        size='xl'
-      />
+      <VStack h='100vh' pos='relative'>
+        <CircularProgress 
+          isIndeterminate
+          color='blue.500'
+          size={240}
+          thickness={4}
+          pos='absolute'
+          top='40%'
+        />
+      </VStack>
     )
   }
 
@@ -100,7 +114,6 @@ const Home = () => {
   }
 
   const topThreeTrucks = filteredTrucks.slice(offset, offset + 3);
-  console.log(filteredTrucks)
   const noTrucks = hasFiltered && filteredTrucks.length <= 0;
 
   return (
@@ -118,7 +131,7 @@ const Home = () => {
         minW='80vw'
       >
         {noTrucks
-          ? 'No open food trucks found within 5 miles' 
+          ? <Text align='center'>No open food trucks found within 5 miles</Text>
           : topThreeTrucks.map((truck: FoodTruck, index) => (
               <FoodTruckCard key={truck?.locationid + index} truck={truck} distance={truck.distance} />
             )
@@ -129,13 +142,13 @@ const Home = () => {
         lineHeight='40px'
         size='md'
         pos={filteredTrucks.length > 1 ? 'relative' : 'absolute'}
-        isDisabled={isPending || (hasFiltered && offset + 3 >= filteredTrucks.length)}
+        isDisabled={isPending || (hasFiltered && offset + 3 >= filteredTrucks.length) || noTrucks}
         onClick={() => filterFoodTrucks()}
         colorScheme='blue'
         top={filteredTrucks.length > 1 ? '0' : '50%'}
         mb={12}
       >
-        {hasFiltered ? 'Show me more' :  'Find Food Trucks Open Now'}
+        {hasFiltered && !noTrucks ? 'Show me more' :  'Find Food Trucks Open Now'}
       </Button>
     </VStack>
   )
