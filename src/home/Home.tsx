@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import haversine, { Coordinate } from 'haversine';
-import { Button, Heading, SimpleGrid, Spinner, VStack, Image, CircularProgress, Text } from '@chakra-ui/react';
+import { Button, Heading, SimpleGrid, VStack, Image, CircularProgress, Text } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import { fetchFoodTrucks } from './HomeAPI';
 import FoodTruckCard from './FoodTruckCard';
@@ -18,7 +18,7 @@ const Home = () => {
   const [filteredTrucks, setFilteredTrucks] = useState<FoodTruck[]>([]);
   const [offset, setOffset] = useState<number>(0);
   const [hasFiltered, setHasFiltered] = useState<boolean>(false);
-  const [currentLocation, setCurrentLocation] = useState<Coordinate>({ latitude: 0, longitude: 0 })
+  const [currentLocation, setCurrentLocation] = useState<Coordinate>({ latitude: 0, longitude: 0 });
 
   const { isPending, isError, data: foodtrucks, error} = useQuery({ queryKey: ['foodtrucks'], queryFn: fetchFoodTrucks });
 
@@ -28,25 +28,20 @@ const Home = () => {
         setCurrentLocation({ 
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
-        })
-        setFilteredTrucks([]);
-        setHasFiltered(false);
+        });
       };
   
       const error = (err: { code: any; message: any; }) => {
         console.warn(`ERROR(${err.code}): ${err.message}`);
         // for testing, we will set location to test location if user declines
         setCurrentLocation(testLocation);
-        setFilteredTrucks([]);
-        setHasFiltered(false);
       };
   
-      navigator.geolocation.getCurrentPosition(success, error)
+      navigator.geolocation.getCurrentPosition(success, error);
     } else {
       setCurrentLocation(testLocation);
-
     }
-  }, [])
+  }, []);
 
   // method to check date/time
   const isOpen = useCallback((truck: FoodTruck) => {

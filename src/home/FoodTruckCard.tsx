@@ -17,7 +17,7 @@ const FoodTruckCard = ({ truck, distance }: FoodTruckCardProps) => {
     } else {
       return `${distance.toFixed(1)} miles`;
     }
-  }, [distance])
+  }, [distance]);
 
   const closingSoon = useMemo(() => {
     const today = new Date();
@@ -25,7 +25,7 @@ const FoodTruckCard = ({ truck, distance }: FoodTruckCardProps) => {
     const close =  parseInt(truck.end24.slice(0,2));
     
     return close - currentHour <= 1;
-  }, [truck.end24])
+  }, [truck.end24]);
 
   return (
     <Card
@@ -50,6 +50,6 @@ const FoodTruckCard = ({ truck, distance }: FoodTruckCardProps) => {
         </CardBody>
       </Stack>
     </Card>
-)}
+)};
 
 export default FoodTruckCard;

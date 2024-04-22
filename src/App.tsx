@@ -1,6 +1,6 @@
 import Home from './home';
-import { ChakraProvider } from '@chakra-ui/react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ChakraProvider } from '@chakra-ui/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const queryClient = new QueryClient();
 
@@ -14,6 +14,6 @@ function App() {
       </QueryClientProvider>
     </ChakraProvider>
   );
-}
+};
 
 export default App;
