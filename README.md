@@ -2,7 +2,7 @@
 
 ## How to View App
 
-The app is currently hosted at [rec.jacobrico.com](https://rec.jacobrico.com/) (Note: the initial load might take a little bit since the free teir of the BE hosting spins down the service after being idle). You can run the end to end application from this URL. You can also find the URL in the github main page for the codebase. The backend is also hosted [on rec-server](https://rec-server-nf5j.onrender.com). If you want to run the backend locally, you can follow the instructions at [the github page for the server](https://github.com/jedwardrico/rec-server).
+If you want to run the backend locally, you can follow the instructions at [the github page for the server](https://github.com/jedwardrico/rec-server).
 
 ## How to Run Locally
 
